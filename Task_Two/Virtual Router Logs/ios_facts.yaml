@@ -1,0 +1,32 @@
+---
+- name: IOS FACTS
+  hosts: routers
+  gather_facts: False
+  connection: local
+ 
+  tasks:
+  - name: Gather L3 interfaces information
+    ios_facts:
+      gather_subset: min
+      gather_network_resources: l3_interfaces
+    register: l3_interfaces_output
+
+  - name: Display L3
+    debug:
+        var: l3_interfaces_output
+
+  - name: Execute show version command
+    ios_command:
+        commands:
+        - show version
+    register: show_version_output
+
+  - name: Display IOS Version
+    debug:
+        var: show_version_output.stdout_lines
+
+  - name: configure logging buffer size
+    ios_logging:
+      dest: buffered
+      size: 5000
+      state: present
